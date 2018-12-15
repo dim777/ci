@@ -1,0 +1,38 @@
+---
+- hosts: mysql_master:mysql_slave
+
+  environment:
+    http_proxy: http://10.45.32.164:12345
+
+  pre_tasks:
+  - name: Install MySQL-python.
+    yum: name=MySQL-python state=latest
+  - name: Download MySQL
+    get_url:
+      url: http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+      dest: /tmp/mysql-community-release-el7-5.noarch.rpm
+  - name: Install the MySQL repo.
+    yum:
+      name: /tmp/mysql-community-release-el7-5.noarch.rpm
+      state: present
+    when: ansible_os_family == "RedHat"
+  - name: Install the MySQL server.
+    yum: name=mysql-server state=latest
+    when: ansible_os_family == "RedHat"
+  - name: Start server
+    systemd: state=started name=mysql
+
+  tasks:
+  - name: Create a new database with name 'rancher'
+    mysql_db:
+      config_file: /etc/my.cnf
+      login_user: root
+      login_password:
+      name: rancher
+      state: present
+  - name: Create user rancher_usr
+    mysql_user:
+      name: rancher_usr
+      password: Qwe123!
+      priv: 'rancher.*:ALL'
+      state: present

@@ -1,0 +1,25 @@
+version: '2'
+services:
+  cilb:
+    scale: 1
+    lb_config:
+      config: |-
+          global
+              maxconn 4096
+              maxpipes 1024
+
+          defaults
+              timeout client 36000s
+              timeout server 36000s
+      port_rules:
+        #mongodb
+        - source_port: 9017
+          target_port: 27017
+          protocol: tcp
+          service: mongodb
+      health_check:
+          port: 42
+          interval: 2000
+          unhealthy_threshold: 3
+          healthy_threshold: 2
+          response_timeout: 2000

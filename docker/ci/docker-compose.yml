@@ -1,0 +1,76 @@
+version: '3.3'
+services:
+  proxy:
+    image: jwilder/nginx-proxy:latest
+    networks:
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /home/dim777/ci/certs:/etc/nginx/certs
+      - 'nginx-config:/etc/nginx/conf.d'
+      - 'nginx-vhosts:/etc/nginx/vhost.d'
+      - 'nginx-webroot:/usr/share/nginx/html'
+    labels:
+      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy"
+    hostname: proxy
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    volumes:
+      - /home/dim777/ci/certs:/etc/nginx/certs:rw
+      - 'nginx-config:/etc/nginx/conf.d'
+      - 'nginx-vhosts:/etc/nginx/vhost.d'
+      - 'nginx-webroot:/usr/share/nginx/html'
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    hostname: letsencrypt
+  youtrack:
+    image: jetbrains/youtrack:2018.1.41826
+    networks:
+      - frontend
+    environment:
+      - VIRTUAL_HOST=youtrack.4digi.ru
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=youtrack.4digi.ru
+      - LETSENCRYPT_EMAIL=dim777@ya.ru
+    volumes:
+      - /opt/docker/youtrack_data:/opt/youtrack/data
+      - /opt/docker/youtrack_conf:/opt/youtrack/conf
+      - /opt/docker/youtrack_logs:/opt/youtrack/logs
+      - /opt/docker/youtrack_backups:/opt/youtrack/backups
+    hostname: youtrack
+  teamcity:
+    image: jetbrains/teamcity-server:latest
+    networks:
+      - frontend
+    environment:
+      - VIRTUAL_HOST=teamcity.4digi.ru
+      - VIRTUAL_PORT=8111
+      - LETSENCRYPT_HOST=teamcity.4digi.ru
+      - LETSENCRYPT_EMAIL=dim777@ya.ru
+    volumes:
+      - /opt/docker/teamcity_data:/data/teamcity_server/datadir
+      - /opt/docker/teamcity_logs:/opt/teamcity/logs
+    hostname: teamcity
+  upsource:
+    image: jetbrains/upsource:2018.1.357
+    networks:
+      - frontend
+    environment:
+      - VIRTUAL_HOST=upsource.4digi.ru
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=upsource.4digi.ru
+      - LETSENCRYPT_EMAIL=dim777@ya.ru
+    volumes:
+      - /opt/docker/upsource_data:/opt/upsource/data
+      - /opt/docker/upsource_conf:/opt/upsource/conf
+      - /opt/docker/upsource_logs:/opt/upsource/logs
+      - /opt/docker/upsource_backups:/opt/upsource/backups
+    hostname: upsource
+volumes:
+  nginx-config:
+  nginx-vhosts:
+  nginx-webroot:
+networks:
+  frontend:

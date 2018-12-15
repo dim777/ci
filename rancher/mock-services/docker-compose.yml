@@ -1,0 +1,18 @@
+version: '2'
+services:
+  cilb:
+    image: rancher/lb-service-haproxy:v0.8.1
+    #stdin_open: true
+    tty: true
+    ports:
+      - 9017
+    #labels:
+      #io.rancher.container.agent.role: environmentAdmin
+      #io.rancher.container.create_agent: 'true'
+  ### mongodb ###
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - mongodb:/data/db
+    restart: always

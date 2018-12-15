@@ -1,0 +1,14 @@
+version: '2'
+services:
+  cilb:
+    image: rancher/lb-service-haproxy:v0.8.1
+    tty: true
+    ports:
+      - 27017
+  ### mongodb ###
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - mongodb:/data/db
+    restart: always

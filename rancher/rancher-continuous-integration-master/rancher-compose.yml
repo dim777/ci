@@ -1,0 +1,62 @@
+version: '2'
+services:
+  mysqldb:
+    external_ips:
+    - 10.45.250.113
+  ad:
+    external_ips:
+    - 10.45.236.11
+    - 10.45.236.12
+  cilb:
+    scale: 1
+    lb_config:
+      config: |-
+            global
+                maxconn 4096
+                maxpipes 1024
+
+            defaults
+                timeout client 36000s
+                timeout server 36000s
+      port_rules:
+        #jenkins mapping
+        - source_port: 8900
+          target_port: 8080
+          priority: 1
+          service: jenkins
+        - source_port: 8902
+          target_port: 50000
+          priority: 2
+          service: jenkins
+        #jira mapping
+        - source_port: 8910
+          target_port: 8080
+          service: jira
+        #confluence mapping
+        - source_port: 8940
+          target_port: 8090
+          service: confluence
+        #gitlab service
+        - source_port: 8920
+          target_port: 80
+          priority: 1
+          service: gitlab
+        - source_port: 8922
+          target_port: 22
+          priority: 2
+          service: gitlab
+        #artifactory
+        - source_port: 8930
+          target_port: 8081
+          service: artifactory
+        #mongodb
+        - source_port: 9017
+          target_port: 27017
+          protocol: tcp
+          service: mongodb
+    health_check:
+      port: 42
+      interval: 2000
+      unhealthy_threshold: 3
+      healthy_threshold: 2
+      response_timeout: 2000

@@ -1,0 +1,104 @@
+version: '2'
+services:
+  mysqldb:
+    image: rancher/external-service
+  ad:
+    image: rancher/external-service
+  cilb:
+    image: rancher/lb-service-haproxy:v0.8.1
+    #stdin_open: true
+    tty: true
+    ports:
+      - 8900
+      - 8910
+      - 8920
+      - 8922
+      - 8930
+      - 8940
+      - 9017
+    #labels:
+      #io.rancher.container.agent.role: environmentAdmin
+      #io.rancher.container.create_agent: 'true'
+  jenkins:
+    #image: dim777/jenkins-oracle-java-sdk:latest
+    image: jenkins/jenkins:latest
+    container_name: jenkins
+    environment:
+      JAVA_OPTS: "-Djava.awt.headless=true"
+    volumes:
+      - jenkins_home_var:/var/jenkins_home
+
+  jira:
+    image: cptactionhank/atlassian-jira:latest
+    container_name: jira
+    volumes:
+      - jira_home:/var/atlassian/jira
+      - jira_data:/opt/atlassian/jira
+
+  confluence:
+    image: cptactionhank/atlassian-confluence:latest
+    container_name: confluence
+    volumes:
+      - confluence_home:/var/atlassian/confluence
+
+  redis:
+    restart: always
+    image: sameersbn/redis:latest
+    container_name: redis
+    volumes:
+    - redis:/var/lib/redis
+
+  postgresql:
+    restart: always
+    image: sameersbn/postgresql:9.6-2
+    container_name: postgresql
+    volumes:
+    - postgresql:/var/lib/postgresql
+    environment:
+    - DB_USER=gitlab
+    - DB_PASS=password
+    - DB_NAME=gitlab_test
+    - DB_EXTENSION=pg_trgm
+
+  gitlab:
+    restart: always
+    image: sameersbn/gitlab:latest
+    container_name: gitlab
+    depends_on:
+    - redis
+    - postgresql
+    volumes:
+    - gitlab_data:/home/git/data
+    - gitlab_config:/home/git/gitlab/config
+    - gitlab_log:/home/git/gitlab/log
+    environment:
+    - DEBUG=false
+    - DB_ADAPTER=postgresql
+    - DB_HOST=postgresql
+    - DB_PORT=5432
+    - DB_USER=gitlab
+    - DB_PASS=password
+    - DB_NAME=gitlab_test
+    - DB_EXTENSION=pg_trgm
+    - REDIS_HOST=redis
+    - REDIS_PORT=6379
+    - GITLAB_SECRETS_DB_KEY_BASE=long-and-random-alphanumeric-string
+    - GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alphanumeric-string
+    - GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alphanumeric-string
+### artifactory ###
+  artifactory:
+    image: docker.bintray.io/jfrog/artifactory-oss:latest
+    container_name: artifactory
+    volumes:
+     - artifactory:/var/opt/jfrog/artifactory
+#    Add extra Java options by uncommenting the following lines
+#    environment:
+#     - EXTRA_JAVA_OPTIONS=-Xmx4g
+    restart: always
+### mongodb ###
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    volumes:
+      - mongodb:/data/db
+    restart: always
