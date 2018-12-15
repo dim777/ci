@@ -45,9 +45,9 @@ services:
     #ports:
     #  - "8091:80"
     environment:
-    - VIRTUAL_HOST=ineb.tech
+    - VIRTUAL_HOST=ineb.ru
     - VIRTUAL_PORT=80
-    - LETSENCRYPT_HOST=ineb.tech
+    - LETSENCRYPT_HOST=ineb.ru
     - LETSENCRYPT_EMAIL=dim777@ya.ru
     volumes:
     - /opt/www/ineb.tech/data/public:/var/www/html
