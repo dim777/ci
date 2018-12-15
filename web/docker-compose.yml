@@ -37,7 +37,7 @@ services:
     volumes:
     - /opt/docker/nexus-data:/nexus-data
     hostname: nexus
-  inebtech:
+  inebru:
     #image: php:7.2.7-apache
     build: php_apache/.
     networks:
@@ -50,9 +50,9 @@ services:
     - LETSENCRYPT_HOST=ineb.ru
     - LETSENCRYPT_EMAIL=dim777@ya.ru
     volumes:
-    - /opt/www/ineb.tech/data/public:/var/www/html
-    - /opt/www/ineb.tech/apache:/etc/apache2/sites-available
-    hostname: inebtech
+    - /opt/www/ineb.ru/data/public:/var/www/html
+    - /opt/www/ineb.ru/apache:/etc/apache2/sites-available
+    hostname: inebru
   mysql:
     image: mysql:5.7.22
     networks:
