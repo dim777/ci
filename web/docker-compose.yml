@@ -45,7 +45,7 @@ services:
     #ports:
     #  - "8091:80"
     environment:
-    - VIRTUAL_HOST=ineb.ru, www.ineb.ru
+    - VIRTUAL_HOST=ineb.ru, www.ineb.ru, carsclinic.ineb.ru, www.carsclinic.ineb.ru
     - VIRTUAL_PORT=80
     - LETSENCRYPT_HOST=ineb.ru
     - LETSENCRYPT_EMAIL=dim777@ya.ru
