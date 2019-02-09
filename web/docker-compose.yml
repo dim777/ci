@@ -51,6 +51,7 @@ services:
     - LETSENCRYPT_EMAIL=dim777@ya.ru
     volumes:
     - /opt/www/ineb.ru/data/public:/var/www/html
+    - /opt/www/ineb.ru/data/public_carsclinic:/var/www/html1
     - /opt/www/ineb.ru/apache:/etc/apache2/sites-available
     hostname: inebru
   mysql:
