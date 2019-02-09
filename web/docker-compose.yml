@@ -37,22 +37,32 @@ services:
     volumes:
     - /opt/docker/nexus-data:/nexus-data
     hostname: nexus
-  inebru:
+  carsclinicru:
     #image: php:7.2.7-apache
     build: php_apache/.
     networks:
     - frontend
+    ports:
+      - "8093:80"
+    volumes:
+    - /opt/www/carsclinic.ru/data/public:/var/www/html
+    - /opt/www/carsclinic.ru/apache:/etc/apache2/sites-available
+    hostname: carsclinicru
+  inebru:
+    #image: php:7.2.7-apache
+    build: php_apache/.
+    networks:
+      - frontend
     #ports:
     #  - "8091:80"
     environment:
-    - VIRTUAL_HOST=ineb.ru, www.ineb.ru, carsclinic.ineb.ru, www.carsclinic.ineb.ru
-    - VIRTUAL_PORT=80
-    - LETSENCRYPT_HOST=ineb.ru
-    - LETSENCRYPT_EMAIL=dim777@ya.ru
+      - VIRTUAL_HOST=ineb.ru, www.ineb.ru
+      - VIRTUAL_PORT=80
+      - LETSENCRYPT_HOST=ineb.ru
+      - LETSENCRYPT_EMAIL=dim777@ya.ru
     volumes:
-    - /opt/www/ineb.ru/data/public:/var/www/html
-    - /opt/www/ineb.ru/data/public_carsclinic:/var/www/html1
-    - /opt/www/ineb.ru/apache:/etc/apache2/sites-available
+      - /opt/www/ineb.ru/data/public:/var/www/html
+      - /opt/www/ineb.ru/apache:/etc/apache2/sites-available
     hostname: inebru
   mysql:
     image: mysql:5.7.22
